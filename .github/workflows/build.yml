@@ -8,6 +8,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: unzip MaxClient-src.zip
+      - name: Fix config path
+        run: sed -i 's|new File(Minecraft.getMinecraft().mcDataDir, "config")|net.minecraftforge.fml.common.Loader.instance().getConfigDir()|' MaxClient/src/main/java/com/maxclient/config/ConfigManager.java
       - name: Pick Forge version
         run: |
           for v in 14.23.5.2860 14.23.5.2859 14.23.5.2855 14.23.5.2847 14.23.5.2838; do
@@ -31,6 +33,7 @@ jobs:
         run: |
           gradle wrapper --gradle-version 4.9
           ./gradlew build --no-daemon 2>&1 | grep -v '^Download' | tail -n 60
+          test -f build/libs/MaxClient-1.0.0.jar
       - uses: actions/upload-artifact@v4
         with:
           name: MaxClient
