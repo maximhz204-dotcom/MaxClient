@@ -8,6 +8,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: unzip MaxClient-src.zip
+      - name: Use Forge 2859
+        run: sed -i 's/14.23.5.2860/14.23.5.2859/' MaxClient/build.gradle
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
