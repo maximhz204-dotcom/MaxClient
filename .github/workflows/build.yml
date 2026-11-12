@@ -8,8 +8,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: unzip MaxClient-src.zip
-      - name: Use Forge 2859
-        run: sed -i 's/14.23.5.2860/14.23.5.2859/' MaxClient/build.gradle
+      - name: Pick Forge version
+        run: |
+          for v in 14.23.5.2860 14.23.5.2859 14.23.5.2855 14.23.5.2847 14.23.5.2838; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" -L "https://maven.minecraftforge.net/net/minecraftforge/forge/1.12.2-$v/forge-1.12.2-$v-userdev.jar")
+            echo "$v -> $code"
+            if [ "$code" = "200" ]; then
+              sed -i "s/14.23.5.2860/$v/" MaxClient/build.gradle
+              break
+            fi
+          done
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
