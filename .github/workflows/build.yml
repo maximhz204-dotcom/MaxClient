@@ -12,7 +12,6 @@ jobs:
         run: |
           for v in 14.23.5.2860 14.23.5.2859 14.23.5.2855 14.23.5.2847 14.23.5.2838; do
             code=$(curl -s -o /dev/null -w "%{http_code}" -L "https://maven.minecraftforge.net/net/minecraftforge/forge/1.12.2-$v/forge-1.12.2-$v-userdev.jar")
-            echo "$v -> $code"
             if [ "$code" = "200" ]; then
               sed -i "s/14.23.5.2860/$v/" MaxClient/build.gradle
               break
@@ -27,10 +26,11 @@ jobs:
           gradle-version: 4.9
           cache-disabled: true
       - name: Build
+        shell: bash
         working-directory: MaxClient
         run: |
           gradle wrapper --gradle-version 4.9
-          ./gradlew build --no-daemon
+          ./gradlew build --no-daemon 2>&1 | grep -v '^Download' | tail -n 60
       - uses: actions/upload-artifact@v4
         with:
           name: MaxClient
